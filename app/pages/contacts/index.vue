@@ -61,16 +61,16 @@ async function handleDelete() {
   <UContainer class="py-8">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold">Contacts</h1>
-      <UButton to="/contacts/create" icon="i-lucide-plus" label="New Contact" />
     </div>
 
-    <div class="mb-4">
+    <div class="flex justify-between mb-4">
       <UInput
         v-model="search"
         icon="i-lucide-search"
         placeholder="Search contacts..."
-        class="w-72"
+        class="w-1/2"
       />
+      <UButton to="/contacts/create" icon="i-lucide-plus" label="New Contact" />
     </div>
 
     <UCard>

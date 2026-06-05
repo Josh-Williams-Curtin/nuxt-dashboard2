@@ -1,9 +1,20 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: [
-    '@nuxt/eslint',
-    '@nuxt/ui'
-  ],
+  ui: {
+    theme: {
+      colors: [
+        'primary',
+        'secondary',
+        'tertiary', // Register a new semantic color
+        'info',
+        'success',
+        'warning',
+        'error'
+      ]
+    }
+  },
+
+  modules: ['@nuxt/eslint', '@nuxt/ui'],
 
   devtools: {
     enabled: true
