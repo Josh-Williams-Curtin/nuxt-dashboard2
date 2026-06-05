@@ -35,11 +35,78 @@ Business logic and data access live in `server/services/`. One file per entity, 
 
 Routes import from services. Services do not import from routes.
 
-When swapping to a real database (Drizzle, Prisma, etc.), only the service files change.
+## Database
 
-## Adding a new entity
+Drizzle ORM with PostgreSQL. Connection config comes from env vars (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
 
-1. Create `server/services/{entity}Service.ts` with CRUD functions and the TypeScript interface
-2. Create the five route files under `server/api/{entity}/`
-3. Create `app/composables/use{Entity}.ts` and `app/components/{Entity}Form.vue`
-4. Add pages under `app/pages/{entity}/`
+Import the `db` instance and `Db` type from `~~/server/db/index.ts`:
+
+```ts
+import { db } from '~~/server/db/index'
+import type { Db } from '~~/server/db/index'
+```
+
+### Naming conventions
+
+| Thing | Convention | Example |
+|-------|-----------|---------|
+| Schema/seed file | camelCase, plural | `buildingBlocks.ts` |
+| Table name | snake_case, plural | `building_blocks` |
+
+### Schema
+
+One file per entity under `server/db/schemas/`. All schemas are re-exported from the barrel `server/db/schema.ts` — **always import from `schema.ts`, never directly from individual schema files**.
+
+```
+server/db/schemas/
+  contact.ts         ← contacts table + statusEnum
+  pillar.ts          ← pillars table + relations
+  buildingBlocks.ts  ← building_block table + relations
+  construct.ts       ← construct table + relations
+  subconstruct.ts    ← subconstruct table + relations
+
+server/db/schema.ts  ← re-exports everything above
+```
+
+When adding a new table:
+1. Create `server/db/schemas/{entity}.ts`
+2. Add `export * from './schemas/{entity}'` to `server/db/schema.ts`
+3. Run `bun run db:generate` then `bun run db:migrate`
+
+### Seed data
+
+**Every table must have a seed file.** `bun run db:seed` should always produce a fully working app state. Seed data also serves as living documentation of the schema.
+
+One file per entity under `server/db/seeds/`, each exporting a `seed(db: Db)` function. The orchestrator `server/db/seed.ts` drops all tables, runs migrations, then calls each seed in dependency order (parents before children).
+
+```
+server/db/seeds/
+  contacts.ts
+  pillars.ts
+  buildingBlocks.ts
+  constructs.ts
+  subconstructs.ts
+
+server/db/seed.ts    ← orchestrates drops + migrations + seed calls
+```
+
+Conventions:
+- Always use `.onConflictDoNothing()` — keeps seeds idempotent
+- Insert order in `seed.ts`: parents before children (foreign key order)
+- DROP order in `seed.ts`: children before parents (reverse of insert order)
+
+When adding a seed for a new table:
+1. Create `server/db/seeds/{entity}.ts` exporting `async function seed(db: Db)`
+2. Add `DROP TABLE IF EXISTS {table} CASCADE` to `server/db/seed.ts` in reverse dependency order (before migrations)
+3. Import and call the seed function in `server/db/seed.ts` in dependency order (after migrations)
+
+## Adding a new entity (full stack)
+
+1. Create `server/db/schemas/{entity}.ts` and add to `server/db/schema.ts`
+2. Create `server/db/seeds/{entity}.ts` and wire into `server/db/seed.ts`
+3. Generate and run migrations
+4. Create `server/services/{entity}Service.ts` with CRUD functions
+5. Create the five route files under `server/api/{entity}/`
+6. Create `app/composables/use{Entity}.ts` and `app/components/{Entity}Form.vue`
+7. Add pages under `app/pages/{entity}/`
+8. Add a nav item to `app/components/AppSidebar.vue`

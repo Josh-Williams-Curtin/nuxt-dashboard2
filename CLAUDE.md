@@ -93,9 +93,17 @@ bun run build      # production build
 bun run preview    # preview production build
 bun run lint       # ESLint
 bun run typecheck  # TypeScript check via vue-tsc
+
+bun run db:generate  # generate a new Drizzle migration from schema changes
+bun run db:migrate   # apply pending migrations
+bun run db:seed      # drop all tables, run migrations, and reseed
 ```
 
 Package manager is **bun**. Do not use npm, yarn, or pnpm.
+
+### Code style
+
+ESLint enforces: no trailing commas (`commaDangle: 'never'`), 1tbs brace style. Match this in generated code.
 
 ### Architecture
 
@@ -105,7 +113,7 @@ Full-stack Nuxt 4 app. No separate backend — Nitro (built into Nuxt) handles b
 
 **Backend** lives in `server/`. File-based API routing under `server/api/` (Nitro). Business logic and data access in `server/services/` — routes stay thin and import from services.
 
-**Data layer** is currently in-memory (no database). When adding a real database, only the service files change; API routes and frontend are unaffected.
+**Data layer** uses Drizzle ORM with PostgreSQL. Schemas live in `server/db/schemas/` (one file per entity), re-exported from `server/db/schema.ts`. Seed data lives in `server/db/seeds/` (one file per entity), orchestrated by `server/db/seed.ts`.
 
 ### Path aliases
 
