@@ -83,4 +83,35 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
-** Project Specific items **
+## Project Reference
+
+### Commands
+
+```bash
+bun run dev        # start dev server
+bun run build      # production build
+bun run preview    # preview production build
+bun run lint       # ESLint
+bun run typecheck  # TypeScript check via vue-tsc
+```
+
+Package manager is **bun**. Do not use npm, yarn, or pnpm.
+
+### Architecture
+
+Full-stack Nuxt 4 app. No separate backend — Nitro (built into Nuxt) handles both SSR and API routes on the same server.
+
+**Frontend** lives in `app/`. Vue 3 + Nuxt UI v4 + Tailwind CSS v4. File-based routing under `app/pages/`. Composables and components are auto-imported.
+
+**Backend** lives in `server/`. File-based API routing under `server/api/` (Nitro). Business logic and data access in `server/services/` — routes stay thin and import from services.
+
+**Data layer** is currently in-memory (no database). When adding a real database, only the service files change; API routes and frontend are unaffected.
+
+### Path aliases
+
+| Alias | Resolves to | Use in |
+|-------|-------------|--------|
+| `~`   | `app/`      | `app/` files |
+| `~~`  | project root | `server/` files |
+
+Using `~` inside `server/` is a common mistake — it resolves to `app/`, not the project root.
