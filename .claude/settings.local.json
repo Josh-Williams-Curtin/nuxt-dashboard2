@@ -4,7 +4,9 @@
       "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/utils /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/api/contacts /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/pages/contacts/\\\\[id\\\\])",
       "Bash(mv /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/utils/store.ts /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/utils/contacts.ts)",
       "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/services)",
-      "Bash(mv /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/utils/contacts.ts /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/services/contactsService.ts)"
+      "Bash(mv /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/utils/contacts.ts /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/services/contactsService.ts)",
+      "Bash(bun --version)",
+      "Bash(bun add *)"
     ]
   }
 }
