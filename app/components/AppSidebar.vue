@@ -3,7 +3,29 @@ import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
 
 const open = useState('sidebarOpen', () => true)
 const colorMode = useColorMode()
+const appConfig = useAppConfig()
 const { user: sessionUser, clear } = useUserSession()
+
+const colors = [
+  'red',
+  'orange',
+  'amber',
+  'yellow',
+  'lime',
+  'green',
+  'emerald',
+  'teal',
+  'cyan',
+  'sky',
+  'blue',
+  'indigo',
+  'violet',
+  'purple',
+  'fuchsia',
+  'pink',
+  'rose'
+]
+const neutrals = ['slate', 'gray', 'zinc', 'stone']
 
 async function logout() {
   await clear()
@@ -34,6 +56,63 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
     { label: 'Settings', icon: 'i-lucide-settings' }
   ],
   [
+    {
+      label: 'Theme',
+      icon: 'i-lucide-palette',
+      children: [
+        {
+          label: 'Primary',
+          slot: 'chip',
+          chip: appConfig.ui.colors.primary,
+          content: { align: 'center', collisionPadding: 16 },
+          children: colors.map((color) => ({
+            label: color,
+            chip: color,
+            slot: 'chip',
+            checked: appConfig.ui.colors.primary === color,
+            type: 'checkbox',
+            onSelect(e: Event) {
+              e.preventDefault()
+              appConfig.ui.colors.primary = color
+            }
+          }))
+        },
+        {
+          label: 'Secondary',
+          slot: 'chip',
+          chip: appConfig.ui.colors.secondary,
+          content: { align: 'center', collisionPadding: 16 },
+          children: colors.map((color) => ({
+            label: color,
+            chip: color,
+            slot: 'chip',
+            checked: appConfig.ui.colors.secondary === color,
+            type: 'checkbox',
+            onSelect(e: Event) {
+              e.preventDefault()
+              appConfig.ui.colors.secondary = color
+            }
+          }))
+        },
+        {
+          label: 'Neutral',
+          slot: 'chip',
+          chip: appConfig.ui.colors.neutral,
+          content: { align: 'end', collisionPadding: 16 },
+          children: neutrals.map((color) => ({
+            label: color,
+            chip: color,
+            slot: 'chip',
+            checked: appConfig.ui.colors.neutral === color,
+            type: 'checkbox',
+            onSelect(e: Event) {
+              e.preventDefault()
+              appConfig.ui.colors.neutral = color
+            }
+          }))
+        }
+      ]
+    },
     {
       label: 'Appearance',
       icon: 'i-lucide-sun-moon',
@@ -72,7 +151,8 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
 <template>
   <USidebar v-model:open="open" collapsible="icon" :ui="{ container: 'h-full' }">
     <template #header>
-      <UIcon name="i-logos-nuxt-icon" class="size-8" />
+      <UIcon name="i-simple-icons-nuxtdotjs" class="size-8 shrink-0 text-primary" />
+      <span class="font-semibold truncate">Nuxt</span>
     </template>
 
     <UNavigationMenu
@@ -97,6 +177,15 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
           class="w-full data-[state=open]:bg-elevated overflow-hidden"
           :ui="{ trailingIcon: 'text-dimmed ms-auto' }"
         />
+
+        <template #chip-leading="{ item }">
+          <span class="inline-flex size-5 items-center justify-center shrink-0">
+            <span
+              class="rounded-full size-2"
+              :style="{ backgroundColor: `var(--color-${(item as any).chip}-500)` }"
+            />
+          </span>
+        </template>
       </UDropdownMenu>
     </template>
   </USidebar>
