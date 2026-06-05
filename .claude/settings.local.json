@@ -12,7 +12,10 @@
       "Bash(bun run *)",
       "Bash(rm /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/shared/utils/contact.ts && bun run typecheck 2>&1)",
       "Bash(awk '{print $NF}')",
-      "Bash(python3 -m json.tool)"
+      "Bash(python3 -m json.tool)",
+      "Bash(bunx drizzle-kit *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(rm -rf /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/db/migrations)"
     ]
   }
 }

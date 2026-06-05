@@ -1,35 +1,28 @@
-let nextId = 4
+import { eq } from 'drizzle-orm'
+import { db } from '~~/server/db/index'
+import { contacts } from '~~/server/db/schema'
+import type { Contact } from '~~/shared/types/contact'
 
-const contacts: Contact[] = [
-  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', phone: '555-0101', status: 'active' },
-  { id: 2, name: 'Bob Smith', email: 'bob@example.com', phone: '555-0102', status: 'active' },
-  { id: 3, name: 'Carol White', email: 'carol@example.com', phone: '555-0103', status: 'inactive' }
-]
-
-export function getContacts() {
-  return contacts
+export async function getContacts(): Promise<Contact[]> {
+  return db.select().from(contacts)
 }
 
-export function getContact(id: number) {
-  return contacts.find((c) => c.id === id) ?? null
+export async function getContact(id: string): Promise<Contact | null> {
+  const rows = await db.select().from(contacts).where(eq(contacts.id, id))
+  return rows[0] ?? null
 }
 
-export function createContact(data: Omit<Contact, 'id'>) {
-  const contact = { id: nextId++, ...data }
-  contacts.push(contact)
-  return contact
+export async function createContact(data: Omit<Contact, 'id'>): Promise<Contact> {
+  const rows = await db.insert(contacts).values(data).returning()
+  return rows[0]!
 }
 
-export function updateContact(id: number, data: Omit<Contact, 'id'>) {
-  const index = contacts.findIndex((c) => c.id === id)
-  if (index === -1) return null
-  contacts[index] = { id, ...data }
-  return contacts[index]
+export async function updateContact(id: string, data: Omit<Contact, 'id'>): Promise<Contact | null> {
+  const rows = await db.update(contacts).set(data).where(eq(contacts.id, id)).returning()
+  return rows[0] ?? null
 }
 
-export function deleteContact(id: number) {
-  const index = contacts.findIndex((c) => c.id === id)
-  if (index === -1) return false
-  contacts.splice(index, 1)
-  return true
+export async function deleteContact(id: string): Promise<boolean> {
+  const rows = await db.delete(contacts).where(eq(contacts.id, id)).returning({ id: contacts.id })
+  return rows.length > 0
 }

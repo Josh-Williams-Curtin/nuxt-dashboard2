@@ -2,7 +2,7 @@ export const CONTACT_STATUSES = ['active', 'inactive'] as const
 export type ContactStatus = typeof CONTACT_STATUSES[number]
 
 export interface Contact {
-  id: number
+  id: string
   name: string
   email: string
   phone: string

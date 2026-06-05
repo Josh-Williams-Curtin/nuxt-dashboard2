@@ -10,17 +10,17 @@ export const useContacts = () => {
     await fetchContacts()
   }
 
-  const updateContact = async (id: number, data: Omit<Contact, 'id'>) => {
+  const updateContact = async (id: string, data: Omit<Contact, 'id'>) => {
     await $fetch(`/api/contacts/${id}`, { method: 'PUT', body: data })
     await fetchContacts()
   }
 
-  const deleteContact = async (id: number) => {
+  const deleteContact = async (id: string) => {
     await $fetch(`/api/contacts/${id}`, { method: 'DELETE' })
     await fetchContacts()
   }
 
-  const fetchContact = (id: number) => $fetch<Contact>(`/api/contacts/${id}`)
+  const fetchContact = (id: string) => $fetch<Contact>(`/api/contacts/${id}`)
 
   return { contacts, fetchContacts, fetchContact, createContact, updateContact, deleteContact }
 }

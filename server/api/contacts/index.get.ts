@@ -1,5 +1,5 @@
 import { getContacts } from "~~/server/services/contactsService";
 
-export default defineEventHandler(() => {
-  return getContacts();
-});
+export default defineEventHandler(async () => {
+  return getContacts()
+})

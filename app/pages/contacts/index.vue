@@ -22,14 +22,14 @@ const columns = [
 ]
 
 const isDeleteOpen = ref(false)
-const deleteId = ref<number | null>(null)
+const deleteId = ref<string | null>(null)
 
-function openDelete(id: number) {
+function openDelete(id: string) {
   deleteId.value = id
   isDeleteOpen.value = true
 }
 
-function rowActions(id: number) {
+function rowActions(id: string) {
   return [
     [{ label: 'Edit', icon: 'i-lucide-pencil', to: `/contacts/${id}/edit` }],
     [

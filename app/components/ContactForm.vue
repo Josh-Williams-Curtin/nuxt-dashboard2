@@ -2,7 +2,7 @@
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 const props = defineProps<{
-  id?: number
+  id?: string
 }>()
 
 const { fetchContact, createContact, updateContact } = useContacts()
