@@ -1,5 +1,6 @@
 import postgres from 'postgres'
 import { drizzle } from 'drizzle-orm/postgres-js'
+import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import * as schema from './schema'
 import { seed as seedContacts } from './seeds/contacts'
 
@@ -14,6 +15,17 @@ const client = postgres({
 
 const db = drizzle(client, { schema })
 
+console.log('Starting Migrations...')
+await client`DROP TABLE IF EXISTS contacts CASCADE`
+await client`DROP TYPE IF EXISTS contact_status`
+await client`DROP SCHEMA IF EXISTS drizzle CASCADE`
+console.log('Dropped existing schema')
+
+await migrate(db, { migrationsFolder: './server/db/migrations' })
+console.log('Migrations finished.')
+
+console.log('Starting Seeding...')
 await seedContacts(db)
+console.log('Seeding finished.')
 
 await client.end()
