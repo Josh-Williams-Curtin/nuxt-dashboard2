@@ -6,7 +6,9 @@
       "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/services)",
       "Bash(mv /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/utils/contacts.ts /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/services/contactsService.ts)",
       "Bash(bun --version)",
-      "Bash(bun add *)"
+      "Bash(bun add *)",
+      "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/shared/utils)",
+      "Bash(rm /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/shared/utils/contactSchema.ts)"
     ]
   }
 }
