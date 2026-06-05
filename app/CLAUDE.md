@@ -50,16 +50,36 @@ When adding nav items, edit the `items` array in `AppSidebar.vue`. Use `to` for 
 ## Composables pattern
 
 - `useState` for shared reactive state across pages
-- `useFetch` for SSR data loading directly in pages/components
-- `$fetch` for mutations (create, update, delete) inside composable functions
-- Do not call `useFetch` inside composable functions — only in components or pages
+- `useAsyncData` inside composables for list fetches — use `immediate: true` and a `transform` callback to populate the `useState` ref
+- `$fetch` for mutations (create, update, delete) inside composable functions, followed by `refresh()` from `useAsyncData`
+- Expose `pending` from `useAsyncData` so pages can show loading state without managing it themselves
+
+Example structure for a list composable:
+
+```ts
+export const useContacts = () => {
+  const contacts = useState<Contact[]>('contacts', () => [])
+
+  const { pending, refresh } = useAsyncData('contacts', () => $fetch<Contact[]>('/api/contacts'), {
+    immediate: true,
+    transform: (data) => (contacts.value = data)
+  })
+
+  const createContact = async (data: Omit<Contact, 'id'>) => {
+    await $fetch('/api/contacts', { method: 'POST', body: data })
+    await refresh()
+  }
+
+  return { contacts, pending, createContact }
+}
+```
 
 ## CRUD pattern
 
 Each entity follows this structure:
 
-- `app/composables/use{Entity}.ts` — state + all `$fetch` calls, exports the TypeScript interface
+- `app/composables/use{Entity}.ts` — state + `useAsyncData` list fetch + `$fetch` mutations with `refresh()`
 - `app/components/{Entity}Form.vue` — shared form for create and edit, accepts `initialData` prop, emits `submit`
-- `app/pages/{entity}/index.vue` — list, calls composable
+- `app/pages/{entity}/index.vue` — list, calls composable, uses `pending` for loading state
 - `app/pages/{entity}/create.vue` — calls composable `create` method
 - `app/pages/{entity}/[id]/edit.vue` — uses `useFetch` for single record, calls composable `update` method

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-const { contacts, fetchContacts, deleteContact } = useContacts()
-const toast = useToast()
-await fetchContacts()
+const { contacts, pending, deleteContact } = useContacts()
 
+const toast = useToast()
 const search = ref('')
 
 const filtered = computed(() => {
@@ -74,7 +73,7 @@ async function handleDelete() {
     </div>
 
     <UCard>
-      <UTable :data="filtered" :columns="columns">
+      <UTable :data="filtered" :columns="columns" :loading="pending">
         <template #status-cell="{ row }">
           <UBadge :color="statusColor[row.original.status]" variant="subtle" class="capitalize">
             {{ row.original.status }}
