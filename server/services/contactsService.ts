@@ -1,5 +1,3 @@
-export { contactSchema } from '#shared/utils/validators'
-
 let nextId = 4
 
 const contacts: Contact[] = [
@@ -13,7 +11,7 @@ export function getContacts() {
 }
 
 export function getContact(id: number) {
-  return contacts.find(c => c.id === id) ?? null
+  return contacts.find((c) => c.id === id) ?? null
 }
 
 export function createContact(data: Omit<Contact, 'id'>) {
@@ -23,14 +21,14 @@ export function createContact(data: Omit<Contact, 'id'>) {
 }
 
 export function updateContact(id: number, data: Omit<Contact, 'id'>) {
-  const index = contacts.findIndex(c => c.id === id)
+  const index = contacts.findIndex((c) => c.id === id)
   if (index === -1) return null
   contacts[index] = { id, ...data }
   return contacts[index]
 }
 
 export function deleteContact(id: number) {
-  const index = contacts.findIndex(c => c.id === id)
+  const index = contacts.findIndex((c) => c.id === id)
   if (index === -1) return false
   contacts.splice(index, 1)
   return true

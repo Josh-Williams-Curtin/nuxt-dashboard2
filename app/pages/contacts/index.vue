@@ -3,6 +3,16 @@ const { contacts, fetchContacts, deleteContact } = useContacts()
 const toast = useToast()
 await fetchContacts()
 
+const search = ref('')
+
+const filtered = computed(() => {
+  if (!search.value) return contacts.value
+  const q = search.value.toLowerCase()
+  return contacts.value.filter(
+    (c) => c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q)
+  )
+})
+
 const columns = [
   { accessorKey: 'name', header: 'Name' },
   { accessorKey: 'email', header: 'Email' },
@@ -13,26 +23,36 @@ const columns = [
 
 const isDeleteOpen = ref(false)
 const deleteId = ref<number | null>(null)
-const deleting = ref(false)
 
-function openDeleteModal(id: number) {
+function openDelete(id: number) {
   deleteId.value = id
   isDeleteOpen.value = true
 }
 
-async function confirmDelete() {
+function rowActions(id: number) {
+  return [
+    [{ label: 'Edit', icon: 'i-lucide-pencil', to: `/contacts/${id}/edit` }],
+    [
+      {
+        label: 'Delete',
+        icon: 'i-lucide-trash-2',
+        color: 'error' as const,
+        onSelect: () => openDelete(id)
+      }
+    ]
+  ]
+}
+
+async function handleDelete() {
   if (!deleteId.value) return
-  deleting.value = true
   try {
     await deleteContact(deleteId.value)
     toast.add({ title: 'Contact deleted', color: 'success' })
-    isDeleteOpen.value = false
   } catch (e) {
-    const message = (e as { data?: { message?: string } }).data?.message ?? 'Failed to delete contact'
+    const message =
+      (e as { data?: { message?: string } }).data?.message ?? 'Failed to delete contact'
     toast.add({ title: message, color: 'error' })
-  } finally {
-    deleting.value = false
-    deleteId.value = null
+    throw e
   }
 }
 </script>
@@ -44,45 +64,38 @@ async function confirmDelete() {
       <UButton to="/contacts/create" icon="i-lucide-plus" label="New Contact" />
     </div>
 
+    <div class="mb-4">
+      <UInput
+        v-model="search"
+        icon="i-lucide-search"
+        placeholder="Search contacts..."
+        class="w-72"
+      />
+    </div>
+
     <UCard>
-      <UTable :data="contacts" :columns="columns">
+      <UTable :data="filtered" :columns="columns">
         <template #status-cell="{ row }">
-          <UBadge
-            :color="row.original.status === 'active' ? 'success' : 'neutral'"
-            variant="subtle"
-          >
+          <UBadge :color="statusColor[row.original.status]" variant="subtle" class="capitalize">
             {{ row.original.status }}
           </UBadge>
         </template>
 
         <template #actions-cell="{ row }">
-          <div class="flex gap-1 justify-end">
-            <UButton
-              :to="`/contacts/${row.original.id}/edit`"
-              icon="i-lucide-pencil"
-              size="xs"
-              color="neutral"
-              variant="ghost"
-              aria-label="Edit"
-            />
-            <UButton
-              icon="i-lucide-trash-2"
-              size="xs"
-              color="error"
-              variant="ghost"
-              aria-label="Delete"
-              @click="openDeleteModal(row.original.id)"
-            />
+          <div class="flex justify-end">
+            <UDropdownMenu :items="rowActions(row.original.id)">
+              <UButton
+                icon="i-lucide-ellipsis-vertical"
+                size="md"
+                color="neutral"
+                variant="ghost"
+              />
+            </UDropdownMenu>
           </div>
         </template>
       </UTable>
     </UCard>
 
-    <UModal v-model:open="isDeleteOpen" title="Delete Contact" description="Are you sure? This cannot be undone.">
-      <template #footer>
-        <UButton label="Cancel" color="neutral" variant="ghost" @click="isDeleteOpen = false" />
-        <UButton label="Delete" color="error" :loading="deleting" @click="confirmDelete" />
-      </template>
-    </UModal>
+    <DeleteModal v-model:open="isDeleteOpen" title="Delete Contact" :on-delete="handleDelete" />
   </UContainer>
 </template>

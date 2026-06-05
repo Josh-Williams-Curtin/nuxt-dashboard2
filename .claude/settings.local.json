@@ -8,7 +8,11 @@
       "Bash(bun --version)",
       "Bash(bun add *)",
       "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/shared/utils)",
-      "Bash(rm /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/shared/utils/contactSchema.ts)"
+      "Bash(rm /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/shared/utils/contactSchema.ts)",
+      "Bash(bun run *)",
+      "Bash(rm /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/shared/utils/contact.ts && bun run typecheck 2>&1)",
+      "Bash(awk '{print $NF}')",
+      "Bash(python3 -m json.tool)"
     ]
   }
 }
