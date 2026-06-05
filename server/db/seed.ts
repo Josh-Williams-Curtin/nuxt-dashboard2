@@ -20,10 +20,10 @@ const client = postgres({
 const db = drizzle(client, { schema })
 
 console.log('Starting Migrations...')
-await client`DROP TABLE IF EXISTS subconstruct CASCADE`
-await client`DROP TABLE IF EXISTS construct CASCADE`
-await client`DROP TABLE IF EXISTS building_block CASCADE`
-await client`DROP TABLE IF EXISTS pillar CASCADE`
+await client`DROP TABLE IF EXISTS subconstructs CASCADE`
+await client`DROP TABLE IF EXISTS constructs CASCADE`
+await client`DROP TABLE IF EXISTS building_blocks CASCADE`
+await client`DROP TABLE IF EXISTS pillars CASCADE`
 await client`DROP TABLE IF EXISTS contacts CASCADE`
 await client`DROP TYPE IF EXISTS contact_status`
 await client`DROP SCHEMA IF EXISTS drizzle CASCADE`

@@ -49,8 +49,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.pillar": {
-      "name": "pillar",
+    "public.pillars": {
+      "name": "pillars",
       "schema": "",
       "columns": {
         "symbol": {
@@ -81,8 +81,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.building_block": {
-      "name": "building_block",
+    "public.building_blocks": {
+      "name": "building_blocks",
       "schema": "",
       "columns": {
         "symbol": {
@@ -113,16 +113,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "building_block_pillar_symbol_pillar_symbol_fk": {
-          "name": "building_block_pillar_symbol_pillar_symbol_fk",
-          "tableFrom": "building_block",
-          "tableTo": "pillar",
-          "columnsFrom": [
-            "pillar_symbol"
-          ],
-          "columnsTo": [
-            "symbol"
-          ],
+        "building_blocks_pillar_symbol_pillars_symbol_fk": {
+          "name": "building_blocks_pillar_symbol_pillars_symbol_fk",
+          "tableFrom": "building_blocks",
+          "tableTo": "pillars",
+          "columnsFrom": ["pillar_symbol"],
+          "columnsTo": ["symbol"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -133,8 +129,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.construct": {
-      "name": "construct",
+    "public.constructs": {
+      "name": "constructs",
       "schema": "",
       "columns": {
         "symbol": {
@@ -165,16 +161,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "construct_building_block_symbol_building_block_symbol_fk": {
-          "name": "construct_building_block_symbol_building_block_symbol_fk",
-          "tableFrom": "construct",
-          "tableTo": "building_block",
-          "columnsFrom": [
-            "building_block_symbol"
-          ],
-          "columnsTo": [
-            "symbol"
-          ],
+        "constructs_building_block_symbol_building_blocks_symbol_fk": {
+          "name": "constructs_building_block_symbol_building_blocks_symbol_fk",
+          "tableFrom": "constructs",
+          "tableTo": "building_blocks",
+          "columnsFrom": ["building_block_symbol"],
+          "columnsTo": ["symbol"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -185,8 +177,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.subconstruct": {
-      "name": "subconstruct",
+    "public.subconstructs": {
+      "name": "subconstructs",
       "schema": "",
       "columns": {
         "symbol": {
@@ -217,16 +209,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "subconstruct_construct_symbol_construct_symbol_fk": {
-          "name": "subconstruct_construct_symbol_construct_symbol_fk",
-          "tableFrom": "subconstruct",
-          "tableTo": "construct",
-          "columnsFrom": [
-            "construct_symbol"
-          ],
-          "columnsTo": [
-            "symbol"
-          ],
+        "subconstructs_construct_symbol_constructs_symbol_fk": {
+          "name": "subconstructs_construct_symbol_constructs_symbol_fk",
+          "tableFrom": "subconstructs",
+          "tableTo": "constructs",
+          "columnsFrom": ["construct_symbol"],
+          "columnsTo": ["symbol"],
           "onDelete": "cascade",
           "onUpdate": "cascade"
         }
@@ -242,10 +230,7 @@
     "public.contact_status": {
       "name": "contact_status",
       "schema": "public",
-      "values": [
-        "active",
-        "inactive"
-      ]
+      "values": ["active", "inactive"]
     }
   },
   "schemas": {},

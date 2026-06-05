@@ -3,7 +3,7 @@ import { relations } from 'drizzle-orm'
 import { pillars } from './pillar'
 import { constructs } from './construct'
 
-export const buildingBlocks = pgTable('building_block', {
+export const buildingBlocks = pgTable('building_blocks', {
   symbol:       varchar('symbol',        { length: 100 }).primaryKey(),
   name:         varchar('name',          { length: 100 }).notNull(),
   order:        integer('order').notNull().default(0),
