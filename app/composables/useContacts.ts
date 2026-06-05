@@ -1,11 +1,3 @@
-export interface Contact {
-  id: number
-  name: string
-  email: string
-  phone: string
-  status: 'active' | 'inactive'
-}
-
 export const useContacts = () => {
   const contacts = useState<Contact[]>('contacts', () => [])
 

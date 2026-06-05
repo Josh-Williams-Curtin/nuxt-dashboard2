@@ -1,10 +1,4 @@
-export interface Contact {
-  id: number
-  name: string
-  email: string
-  phone: string
-  status: 'active' | 'inactive'
-}
+export { contactSchema } from '#shared/utils/validators'
 
 let nextId = 4
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { contacts, fetchContacts, deleteContact } = useContacts()
+const toast = useToast()
 await fetchContacts()
 
 const columns = [
@@ -10,9 +11,29 @@ const columns = [
   { id: 'actions', header: '' }
 ]
 
-async function remove(id: number) {
-  if (!confirm('Delete this contact?')) return
-  await deleteContact(id)
+const isDeleteOpen = ref(false)
+const deleteId = ref<number | null>(null)
+const deleting = ref(false)
+
+function openDeleteModal(id: number) {
+  deleteId.value = id
+  isDeleteOpen.value = true
+}
+
+async function confirmDelete() {
+  if (!deleteId.value) return
+  deleting.value = true
+  try {
+    await deleteContact(deleteId.value)
+    toast.add({ title: 'Contact deleted', color: 'success' })
+    isDeleteOpen.value = false
+  } catch (e) {
+    const message = (e as { data?: { message?: string } }).data?.message ?? 'Failed to delete contact'
+    toast.add({ title: message, color: 'error' })
+  } finally {
+    deleting.value = false
+    deleteId.value = null
+  }
 }
 </script>
 
@@ -50,11 +71,18 @@ async function remove(id: number) {
               color="error"
               variant="ghost"
               aria-label="Delete"
-              @click="remove(row.original.id)"
+              @click="openDeleteModal(row.original.id)"
             />
           </div>
         </template>
       </UTable>
     </UCard>
+
+    <UModal v-model:open="isDeleteOpen" title="Delete Contact" description="Are you sure? This cannot be undone.">
+      <template #footer>
+        <UButton label="Cancel" color="neutral" variant="ghost" @click="isDeleteOpen = false" />
+        <UButton label="Delete" color="error" :loading="deleting" @click="confirmDelete" />
+      </template>
+    </UModal>
   </UContainer>
 </template>

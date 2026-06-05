@@ -1,6 +1,10 @@
-import { createContact } from "~~/server/services/contactsService";
+import { createContact, contactSchema } from "~~/server/services/contactsService";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  return createContact(body);
+  const result = contactSchema.safeParse(body);
+  if (!result.success) {
+    throw createError({ statusCode: 400, message: result.error.issues[0]?.message ?? "Invalid input" });
+  }
+  return createContact(result.data);
 });

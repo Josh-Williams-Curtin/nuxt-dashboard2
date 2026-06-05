@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 const props = defineProps<{
@@ -8,27 +7,15 @@ const props = defineProps<{
 
 const { fetchContact, createContact, updateContact } = useContacts()
 const router = useRouter()
+const toast = useToast()
 
-const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.email('Invalid email'),
-  phone: z.string(),
-  status: z.enum(['active', 'inactive'])
-})
-
-type Schema = z.output<typeof schema>
+type Schema = ContactSchema
 
 const existing = props.id ? await fetchContact(props.id) : null
 
-const state = reactive<Partial<Schema>>({
-  name: existing?.name ?? '',
-  email: existing?.email ?? '',
-  phone: existing?.phone ?? '',
-  status: existing?.status ?? 'active'
-})
+const state = reactive<Partial<Schema>>({ ...defaultContact, ...(existing ?? {}) })
 
 const loading = ref(false)
-const error = ref('')
 
 const statusItems = [
   { label: 'Active', value: 'active' },
@@ -37,16 +24,20 @@ const statusItems = [
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   loading.value = true
-  error.value = ''
   try {
     if (props.id) {
       await updateContact(props.id, event.data)
+      toast.add({ title: 'Contact updated', color: 'success' })
     } else {
       await createContact(event.data)
+      toast.add({ title: 'Contact created', color: 'success' })
     }
     router.push('/contacts')
-  } catch {
-    error.value = props.id ? 'Failed to update contact.' : 'Failed to create contact.'
+  } catch (e) {
+    const message =
+      (e as { data?: { message?: string } }).data?.message ??
+      (props.id ? 'Failed to update contact' : 'Failed to create contact')
+    toast.add({ title: message, color: 'error' })
   } finally {
     loading.value = false
   }
@@ -61,15 +52,18 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     </div>
 
     <UCard>
-      <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-        <UAlert v-if="error" color="error" :description="error" />
-
+      <UForm :schema="contactSchema" :state="state" class="space-y-4" @submit="onSubmit">
         <UFormField name="name" label="Name">
           <UInput v-model="state.name" placeholder="Full name" class="w-full" />
         </UFormField>
 
         <UFormField name="email" label="Email">
-          <UInput v-model="state.email" type="email" placeholder="email@example.com" class="w-full" />
+          <UInput
+            v-model="state.email"
+            type="email"
+            placeholder="email@example.com"
+            class="w-full"
+          />
         </UFormField>
 
         <UFormField name="phone" label="Phone">
@@ -81,7 +75,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         </UFormField>
 
         <div class="flex gap-2 pt-2">
-          <UButton type="submit" :label="id ? 'Update Contact' : 'Create Contact'" :loading="loading" />
+          <UButton
+            type="submit"
+            :label="id ? 'Update Contact' : 'Create Contact'"
+            :loading="loading"
+          />
           <UButton to="/contacts" label="Cancel" color="neutral" variant="ghost" />
         </div>
       </UForm>
