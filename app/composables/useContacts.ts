@@ -28,5 +28,7 @@ export const useContacts = () => {
     await fetchContacts()
   }
 
-  return { contacts, fetchContacts, createContact, updateContact, deleteContact }
+  const fetchContact = (id: number) => $fetch<Contact>(`/api/contacts/${id}`)
+
+  return { contacts, fetchContacts, fetchContact, createContact, updateContact, deleteContact }
 }
