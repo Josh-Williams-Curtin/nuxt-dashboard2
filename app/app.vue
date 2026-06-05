@@ -8,15 +8,19 @@ useHead({
 useSeoMeta({ title: 'nuxt-dashboard' })
 
 const sidebarOpen = useState('sidebarOpen', () => true)
+const { loggedIn } = useUserSession()
 </script>
 
 <template>
   <UApp>
     <div class="flex h-screen overflow-hidden">
-      <AppSidebar />
+      <AppSidebar v-if="loggedIn" />
 
       <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <div class="h-(--ui-header-height) shrink-0 flex items-center px-4 border-b border-default">
+        <div
+          v-if="loggedIn"
+          class="h-(--ui-header-height) shrink-0 flex items-center px-4 border-b border-default"
+        >
           <UButton
             icon="i-lucide-panel-left"
             color="neutral"

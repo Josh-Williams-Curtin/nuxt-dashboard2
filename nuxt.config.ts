@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ['@nuxt/eslint', '@nuxt/ui'],
+  modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-auth-utils'],
 
   devtools: {
     enabled: true
@@ -31,6 +31,12 @@ export default defineNuxtConfig({
   vite: {
     optimizeDeps: {
       include: ['@vue/devtools-core', '@vue/devtools-kit']
+    }
+  },
+
+  runtimeConfig: {
+    session: {
+      maxAge: 60 * 60 * 24 * 7
     }
   },
 

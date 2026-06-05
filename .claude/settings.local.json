@@ -17,7 +17,11 @@
       "Bash(echo \"EXIT: $?\")",
       "Bash(rm -rf /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/db/migrations)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:ui.nuxt.com)"
+      "WebFetch(domain:ui.nuxt.com)",
+      "Bash(bunx nuxi *)",
+      "Bash(openssl rand *)",
+      "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/api/auth)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('include', []\\), indent=2\\)\\)\")"
     ]
   }
 }

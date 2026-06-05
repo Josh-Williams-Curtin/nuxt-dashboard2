@@ -3,6 +3,12 @@ import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
 
 const open = useState('sidebarOpen', () => true)
 const colorMode = useColorMode()
+const { user: sessionUser, clear } = useUserSession()
+
+async function logout() {
+  await clear()
+  await navigateTo('/login')
+}
 
 const items: NavigationMenuItem[] = [
   {
@@ -17,10 +23,10 @@ const items: NavigationMenuItem[] = [
   }
 ]
 
-const user = ref({
-  name: 'Josh Williams',
-  avatar: { alt: 'Josh Williams' }
-})
+const user = computed(() => ({
+  name: sessionUser.value?.name ?? '',
+  avatar: { alt: sessionUser.value?.name ?? '' }
+}))
 
 const userItems = computed<DropdownMenuItem[][]>(() => [
   [
@@ -59,7 +65,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
       ]
     }
   ],
-  [{ label: 'Log out', icon: 'i-lucide-log-out' }]
+  [{ label: 'Log out', icon: 'i-lucide-log-out', onSelect: logout }]
 ])
 </script>
 

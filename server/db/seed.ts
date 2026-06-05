@@ -2,6 +2,7 @@ import postgres from 'postgres'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import * as schema from './schema'
+import { seed as seedUsers } from './seeds/users'
 import { seed as seedContacts } from './seeds/contacts'
 import { seed as seedPillars } from './seeds/pillars'
 import { seed as seedBuildingBlocks } from './seeds/buildingBlocks'
@@ -25,6 +26,7 @@ await client`DROP TABLE IF EXISTS constructs CASCADE`
 await client`DROP TABLE IF EXISTS building_blocks CASCADE`
 await client`DROP TABLE IF EXISTS pillars CASCADE`
 await client`DROP TABLE IF EXISTS contacts CASCADE`
+await client`DROP TABLE IF EXISTS users CASCADE`
 await client`DROP TYPE IF EXISTS contact_status`
 await client`DROP SCHEMA IF EXISTS drizzle CASCADE`
 console.log('Dropped existing schema')
@@ -33,6 +35,7 @@ await migrate(db, { migrationsFolder: './server/db/migrations' })
 console.log('Migrations finished.')
 
 console.log('Starting Seeding...')
+await seedUsers(db)
 await seedContacts(db)
 await seedPillars(db)
 await seedBuildingBlocks(db)
