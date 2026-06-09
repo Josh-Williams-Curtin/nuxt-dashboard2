@@ -79,11 +79,11 @@ const isEditOpen = ref(false)
 const saving = ref(false)
 const toast = useToast()
 
-async function handleSave(name: string, order: number) {
+async function handleSave(updates: PillarItemSchema) {
   if (!selectedItem.value) return
   const { symbol, type } = selectedItem.value.value
   try {
-    await $fetch('/api/pillars/item', { method: 'PATCH', body: { type, symbol, name, order } })
+    await $fetch('/api/pillars/item', { method: 'PATCH', body: { type, symbol, ...updates } })
     await refresh()
     items.value = data.value ?? []
     toast.add({ title: 'Saved', color: 'success' })
@@ -145,11 +145,10 @@ useSortable(tree, items, {
         :items="items"
       />
     </UCard>
-    <EditItemModal
+    <EditTreeItemModal
+      v-if="selectedItem"
       v-model:open="isEditOpen"
-      :symbol="selectedItem?.value.symbol ?? ''"
-      :initial-name="selectedItem?.label ?? ''"
-      :initial-order="selectedItem?.value.order ?? 0"
+      :item="selectedItem.value"
       :on-save="handleSave"
     />
   </UContainer>

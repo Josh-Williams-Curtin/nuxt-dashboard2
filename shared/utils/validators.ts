@@ -10,6 +10,13 @@ export const contactSchema = z.object({
 
 export type ContactSchema = z.output<typeof contactSchema>
 
+export const pillarItemSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  order: z.number().min(1, 'Order must be at least 1')
+})
+
+export type PillarItemSchema = z.output<typeof pillarItemSchema>
+
 export const loginSchema = z.object({
   email: z.email('Invalid email'),
   password: z.string('Password is required').min(8, 'Must be at least 8 characters')

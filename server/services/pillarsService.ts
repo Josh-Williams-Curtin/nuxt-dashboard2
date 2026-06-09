@@ -1,13 +1,12 @@
 import { asc, eq } from 'drizzle-orm'
 import { db } from '~~/server/db/index'
 import { pillars, buildingBlocks, constructs, subconstructs } from '~~/server/db/schema'
-
-type NodeType = 'pillar' | 'buildingBlock' | 'construct' | 'subconstruct'
+import type { PillarTreeItem } from '~~/shared/types/pillar'
 
 type TreeNode = {
   label: string
   icon: string
-  value: { symbol: string; type: NodeType; order: number }
+  value: PillarTreeItem
   defaultExpanded: boolean
   children?: TreeNode[]
 }
@@ -33,22 +32,22 @@ export async function getPillarsTree(): Promise<TreeNode[]> {
   return rows.map((p) => ({
     label: p.name,
     icon: 'i-lucide-layers',
-    value: { symbol: p.symbol, type: 'pillar' as const, order: p.order },
+    value: { symbol: p.symbol, type: 'pillar' as const, order: p.order, name: p.name },
     defaultExpanded: true,
     children: p.buildingBlocks.map((bb) => ({
       label: bb.name,
       icon: 'i-lucide-box',
-      value: { symbol: bb.symbol, type: 'buildingBlock' as const, order: bb.order },
+      value: { symbol: bb.symbol, type: 'buildingBlock' as const, order: bb.order, name: bb.name },
       defaultExpanded: true,
       children: bb.constructs.map((c) => ({
         label: c.name,
         icon: 'i-lucide-puzzle',
-        value: { symbol: c.symbol, type: 'construct' as const, order: c.order },
+        value: { symbol: c.symbol, type: 'construct' as const, order: c.order, name: c.name },
         defaultExpanded: true,
         children: c.subconstructs.map((sc) => ({
           label: sc.name,
           icon: 'i-lucide-circle-dot',
-          value: { symbol: sc.symbol, type: 'subconstruct' as const, order: sc.order },
+          value: { symbol: sc.symbol, type: 'subconstruct' as const, order: sc.order, name: sc.name },
           defaultExpanded: false
         }))
       }))
