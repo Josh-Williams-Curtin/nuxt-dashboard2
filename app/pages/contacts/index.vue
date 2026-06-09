@@ -67,7 +67,13 @@ async function handleDelete() {
         placeholder="Search contacts..."
         class="w-1/2"
       />
-      <UButton to="/contacts/create" icon="i-lucide-plus" label="New Contact" />
+      <UButton
+        to="/contacts/create"
+        icon="i-lucide-plus"
+        label="New Contact"
+        variant="subtle"
+        size="sm"
+      />
     </div>
 
     <UCard>
