@@ -38,17 +38,17 @@ export async function getPillarsTree(): Promise<TreeNode[]> {
     children: p.buildingBlocks.map((bb) => ({
       label: bb.name,
       icon: 'i-lucide-box',
-      value: { symbol: bb.symbol, type: 'buildingBlock', order: bb.order, name: bb.name },
+      value: { symbol: bb.symbol, type: 'buildingBlock', order: bb.order, name: bb.name, parentSymbol: p.symbol },
       defaultExpanded: true,
       children: bb.constructs.map((c) => ({
         label: c.name,
         icon: 'i-lucide-puzzle',
-        value: { symbol: c.symbol, type: 'construct', order: c.order, name: c.name },
+        value: { symbol: c.symbol, type: 'construct', order: c.order, name: c.name, parentSymbol: bb.symbol },
         defaultExpanded: true,
         children: c.subconstructs.map((sc) => ({
           label: sc.name,
           icon: 'i-lucide-circle-dot',
-          value: { symbol: sc.symbol, type: 'subconstruct', order: sc.order, name: sc.name },
+          value: { symbol: sc.symbol, type: 'subconstruct', order: sc.order, name: sc.name, parentSymbol: c.symbol },
           defaultExpanded: false
         }))
       }))
@@ -158,8 +158,11 @@ export async function updateItem(type: NodeType, symbol: string, name: string, o
 async function getSiblingsByParent(
   tx: Tx,
   type: NodeType,
-  parentSymbol: string
+  parentSymbol?: string
 ): Promise<{ table: SiblingTable; siblings: { symbol: string }[] }> {
+  if (type === 'pillar') {
+    return { table: pillars, siblings: await tx.select().from(pillars).orderBy(asc(pillars.order)) }
+  }
   if (type === 'buildingBlock') {
     return {
       table: buildingBlocks,
@@ -192,7 +195,7 @@ async function getSiblingsByParent(
 
 export async function createItem(
   type: NodeType,
-  parentSymbol: string,
+  parentSymbol: string | undefined,
   symbol: string,
   name: string,
   order: number
@@ -203,25 +206,29 @@ export async function createItem(
     const finalOrder = ordered.findIndex((i) => i.symbol === symbol) + 1
 
     let newRow: Record<string, unknown>
-    if (type === 'buildingBlock') {
+    if (type === 'pillar') {
+      newRow = (
+        await tx.insert(pillars).values({ symbol, name, order: finalOrder }).returning()
+      )[0]!
+    } else if (type === 'buildingBlock') {
       newRow = (
         await tx
           .insert(buildingBlocks)
-          .values({ symbol, name, order: finalOrder, pillarSymbol: parentSymbol })
+          .values({ symbol, name, order: finalOrder, pillarSymbol: parentSymbol! })
           .returning()
       )[0]!
     } else if (type === 'construct') {
       newRow = (
         await tx
           .insert(constructs)
-          .values({ symbol, name, order: finalOrder, buildingBlockSymbol: parentSymbol })
+          .values({ symbol, name, order: finalOrder, buildingBlockSymbol: parentSymbol! })
           .returning()
       )[0]!
     } else {
       newRow = (
         await tx
           .insert(subconstructs)
-          .values({ symbol, name, order: finalOrder, constructSymbol: parentSymbol })
+          .values({ symbol, name, order: finalOrder, constructSymbol: parentSymbol! })
           .returning()
       )[0]!
     }

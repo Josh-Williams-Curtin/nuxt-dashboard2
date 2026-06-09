@@ -5,4 +5,5 @@ export interface PillarTreeItem {
   name: string
   order: number
   type: NodeType
+  parentSymbol?: string
 }

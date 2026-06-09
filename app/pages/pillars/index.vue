@@ -85,20 +85,20 @@ const childTypeMap: Record<string, string> = {
   buildingBlock: 'construct',
   construct: 'subconstruct'
 }
-const canCreate = computed(
-  () => !!selectedItem.value && selectedItem.value.value.type !== 'subconstruct'
-)
+const canCreate = computed(() => true)
 
 const saving = ref(false)
 const toast = useToast()
 
 async function handleCreate(newItem: PillarItemCreateSchema) {
-  if (!selectedItem.value) return
-  const { symbol: parentSymbol, type: parentType } = selectedItem.value.value
+  const sel = selectedItem.value?.value
+  const isSubconstruct = sel?.type === 'subconstruct'
+  const type = !sel ? 'pillar' : isSubconstruct ? 'subconstruct' : childTypeMap[sel.type]
+  const parentSymbol = isSubconstruct ? sel!.parentSymbol : sel?.symbol
   try {
     await $fetch('/api/pillars/item', {
       method: 'POST',
-      body: { type: childTypeMap[parentType], parentSymbol, ...newItem }
+      body: { type, parentSymbol, ...newItem }
     })
     await refresh()
     items.value = data.value ?? []
@@ -109,7 +109,7 @@ async function handleCreate(newItem: PillarItemCreateSchema) {
   }
 }
 
-async function handleSave(updates: PillarItemSchema) {
+async function handleSave(updates: PillarItemCreateSchema) {
   if (!selectedItem.value) return
   const { symbol, type } = selectedItem.value.value
   try {
@@ -184,7 +184,6 @@ const menuItems = computed<ContextMenuItem[][]>(() => [
     {
       label: 'Create',
       icon: 'i-lucide-plus',
-      disabled: contextItem.value?.value.type === 'subconstruct',
       onSelect() {
         selectedItem.value = contextItem.value
         isCreateOpen.value = true
@@ -273,18 +272,23 @@ const menuItems = computed<ContextMenuItem[][]>(() => [
         </UCard>
       </div>
     </UContextMenu>
-    <CreateTreeItemModal
-      v-if="canCreate"
+    <TreeItemModal
       v-model:open="isCreateOpen"
-      :parent="selectedItem!.value"
+      :item="selectedItem?.value"
       :on-save="handleCreate"
     />
-    <EditTreeItemModal
+    <TreeItemModal
       v-if="selectedItem"
       v-model:open="isEditOpen"
       :item="selectedItem.value"
+      :id="selectedItem.value.symbol"
       :on-save="handleSave"
     />
-    <DeleteModal v-model:open="isDeleteOpen" title="Delete Contact" :on-delete="handleDelete" />
+    <DeleteModal
+      v-model:open="isDeleteOpen"
+      title="Delete Contact"
+      description="Are you sure? This action cannot be undone. Any children associate with this item will also be deleted."
+      :on-delete="handleDelete"
+    />
   </UContainer>
 </template>
