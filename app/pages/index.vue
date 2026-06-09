@@ -33,6 +33,27 @@
 
       <USeparator />
 
+      <!-- BUTTONS -->
+      <section>
+        <h2 class="text-2xl font-bold text-highlighted mb-1">Buttons</h2>
+        <p class="text-muted mb-6">Every variant across all semantic colors.</p>
+
+        <div class="space-y-3">
+          <div v-for="variant in buttonVariants" :key="variant" class="flex flex-wrap items-center gap-2">
+            <span class="text-xs text-muted font-mono w-16 shrink-0">{{ variant }}</span>
+            <UButton
+              v-for="color in buttonColors"
+              :key="color"
+              :variant="variant"
+              :color="color"
+              :label="color"
+            />
+          </div>
+        </div>
+      </section>
+
+      <USeparator />
+
       <!-- TEXT -->
       <section>
         <h2 class="text-2xl font-bold text-highlighted mb-1">Text</h2>
@@ -176,7 +197,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 useState('pageTitle').value = 'Theme Preview'
 
 const semanticColors = [
@@ -211,6 +232,9 @@ const borderTokens = [
   { class: 'border-accented', label: 'Accented' },
   { class: 'border-inverted', label: 'Inverted' }
 ]
+
+const buttonVariants = ['solid', 'outline', 'soft', 'subtle', 'ghost', 'link'] as const
+const buttonColors = ['primary', 'secondary', 'success', 'info', 'warning', 'error', 'neutral'] as const
 
 const radiusTokens = [
   { class: 'rounded-xs', label: 'xs' },
