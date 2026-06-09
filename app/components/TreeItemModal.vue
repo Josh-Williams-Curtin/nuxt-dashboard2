@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PillarTreeItem } from '~~/shared/types/pillar'
+import type { PillarTreeItem } from '~~/shared/types/treeItem'
 
 const childLabels: Record<string, string> = {
   pillar: 'Building Block',
@@ -45,7 +45,11 @@ watch(open, (val) => {
   >
     <div class="grid grid-cols-2 gap-3">
       <UFormField v-if="item && (!isEdit || item.parentSymbol)" label="Parent">
-        <UInput :model-value="(isEdit || item.type === 'subconstruct') ? item.parentSymbol : item.symbol" disabled class="w-full" />
+        <UInput
+          :model-value="isEdit || item.type === 'subconstruct' ? item.parentSymbol : item.symbol"
+          disabled
+          class="w-full"
+        />
       </UFormField>
       <UFormField name="symbol" label="Symbol">
         <UInput v-model="state.symbol" :disabled="isEdit" :autofocus="!isEdit" class="w-full" />

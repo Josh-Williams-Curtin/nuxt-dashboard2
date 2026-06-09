@@ -1,4 +1,4 @@
-import { createItem } from '~~/server/services/pillarsService'
+import { createItem } from '~~/server/services/pillarsTreeService'
 
 export default defineEventHandler(async (event) => {
   const { type, parentSymbol, symbol, name, order } = await readBody(event)

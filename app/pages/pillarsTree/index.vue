@@ -6,7 +6,7 @@ import type { ContextMenuItem } from '@nuxt/ui'
 
 useState('pageTitle').value = 'Pillars'
 
-const { items, saving, flatten, moveItem, debouncedSave, create, update, remove } = usePillars()
+const { items, saving, flatten, moveItem, debouncedSave, create, update, deleteItem } = useCustomTree()
 
 const selectedItem = ref<TreeItem | undefined>()
 const isEditOpen = ref(false)
@@ -53,7 +53,7 @@ async function handleDelete() {
   if (!selectedItem.value) return
   const { symbol, type } = selectedItem.value.value
   try {
-    await remove(type, symbol)
+    await deleteItem(type, symbol)
     selectedItem.value = undefined
     toast.add({ title: 'Delete Successful', color: 'success' })
   } catch {

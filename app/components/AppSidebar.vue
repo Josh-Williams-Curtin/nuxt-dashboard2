@@ -44,9 +44,9 @@ const items: NavigationMenuItem[] = [
     to: '/contacts'
   },
   {
-    label: 'Pillars',
+    label: 'Pillars Tree',
     icon: 'i-lucide-layers',
-    to: '/pillars'
+    to: '/pillarsTree'
   }
 ]
 

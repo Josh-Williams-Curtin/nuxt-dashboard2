@@ -1,7 +1,7 @@
 import type { TreeItem } from '@nuxt/ui'
 import { useDebounceFn } from '@vueuse/core'
 
-export const usePillars = () => {
+export const useCustomTree = () => {
   const items = useState<TreeItem[]>('pillars-tree', () => [])
   const saving = ref(false)
 
@@ -84,7 +84,7 @@ export const usePillars = () => {
     await refresh()
   }
 
-  async function remove(type: string, symbol: string) {
+  async function deleteItem(type: string, symbol: string) {
     await $fetch('/api/pillars/item', { method: 'DELETE', body: { type, symbol } })
     await refresh()
   }
@@ -100,5 +100,5 @@ export const usePillars = () => {
 
   const debouncedSave = useDebounceFn(save, 500)
 
-  return { items, pending, saving, flatten, moveItem, debouncedSave, create, update, remove }
+  return { items, pending, saving, flatten, moveItem, debouncedSave, create, update, deleteItem }
 }

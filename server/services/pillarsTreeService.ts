@@ -1,7 +1,7 @@
 import { asc, eq } from 'drizzle-orm'
 import { db } from '~~/server/db/index'
 import { pillars, buildingBlocks, constructs, subconstructs } from '~~/server/db/schema'
-import type { NodeType, PillarTreeItem } from '~~/shared/types/pillar'
+import type { NodeType, PillarTreeItem } from '~~/shared/types/treeItem'
 
 type TreeNode = {
   label: string
@@ -38,17 +38,35 @@ export async function getPillarsTree(): Promise<TreeNode[]> {
     children: p.buildingBlocks.map((bb) => ({
       label: bb.name,
       icon: 'i-lucide-box',
-      value: { symbol: bb.symbol, type: 'buildingBlock', order: bb.order, name: bb.name, parentSymbol: p.symbol },
+      value: {
+        symbol: bb.symbol,
+        type: 'buildingBlock',
+        order: bb.order,
+        name: bb.name,
+        parentSymbol: p.symbol
+      },
       defaultExpanded: true,
       children: bb.constructs.map((c) => ({
         label: c.name,
         icon: 'i-lucide-puzzle',
-        value: { symbol: c.symbol, type: 'construct', order: c.order, name: c.name, parentSymbol: bb.symbol },
+        value: {
+          symbol: c.symbol,
+          type: 'construct',
+          order: c.order,
+          name: c.name,
+          parentSymbol: bb.symbol
+        },
         defaultExpanded: true,
         children: c.subconstructs.map((sc) => ({
           label: sc.name,
           icon: 'i-lucide-circle-dot',
-          value: { symbol: sc.symbol, type: 'subconstruct', order: sc.order, name: sc.name, parentSymbol: c.symbol },
+          value: {
+            symbol: sc.symbol,
+            type: 'subconstruct',
+            order: sc.order,
+            name: sc.name,
+            parentSymbol: c.symbol
+          },
           defaultExpanded: false
         }))
       }))
@@ -281,7 +299,8 @@ export async function reorderTree(data: ReorderData): Promise<void> {
 
 export async function deleteItem(type: NodeType, symbol: string) {
   if (type === 'pillar') return db.delete(pillars).where(eq(pillars.symbol, symbol))
-  if (type === 'buildingBlock') return db.delete(buildingBlocks).where(eq(buildingBlocks.symbol, symbol))
+  if (type === 'buildingBlock')
+    return db.delete(buildingBlocks).where(eq(buildingBlocks.symbol, symbol))
   if (type === 'construct') return db.delete(constructs).where(eq(constructs.symbol, symbol))
   return db.delete(subconstructs).where(eq(subconstructs.symbol, symbol))
 }

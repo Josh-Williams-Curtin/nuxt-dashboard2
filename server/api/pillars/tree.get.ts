@@ -1,3 +1,3 @@
-import { getPillarsTree } from '~~/server/services/pillarsService'
+import { getPillarsTree } from '~~/server/services/pillarsTreeService'
 
 export default defineEventHandler(() => getPillarsTree())

@@ -1,4 +1,4 @@
-import { reorderTree, type ReorderData } from '~~/server/services/pillarsService'
+import { reorderTree, type ReorderData } from '~~/server/services/pillarsTreeService'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<ReorderData>(event)
