@@ -74,6 +74,42 @@ export const useContacts = () => {
 }
 ```
 
+## Modal pattern
+
+Use `FormModal` (`app/components/FormModal.vue`) for any create or edit modal. It handles the `UModal` shell, `UForm` wiring, submit/error logic, and Cancel/Save buttons. It is generic — TypeScript infers the form data type from the `schema` and `onSave` props.
+
+```vue
+<!-- The reusable shell — don't recreate this -->
+<FormModal v-model:open="open" title="..." :schema="mySchema" :state="state" :on-save="onSave">
+  <!-- slot: your fields only -->
+</FormModal>
+```
+
+A specific modal only needs:
+1. State initialised from props and reset on open
+2. Field layout in the default slot
+
+```vue
+<script setup lang="ts">
+const props = defineProps<{ item: MyType; onSave: (data: MySchema) => Promise<void> }>()
+const open = defineModel<boolean>('open', { default: false })
+const state = reactive<Partial<MyType>>({ ...props.item })
+watch(open, (val) => { if (val) Object.assign(state, props.item) })
+</script>
+
+<template>
+  <FormModal v-model:open="open" title="Edit ..." :schema="mySchema" :state="state" :on-save="onSave">
+    <div class="grid grid-cols-2 gap-3">
+      <!-- UFormField entries -->
+    </div>
+  </FormModal>
+</template>
+```
+
+`onSave` is called with the Zod-validated data object. If it throws, the modal stays open (caller shows the toast). Modal closes automatically on success.
+
+Zod schemas for modals live in `shared/utils/validators.ts`. Shared data types live in `shared/types/`.
+
 ## CRUD pattern
 
 Each entity follows this structure:

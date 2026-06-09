@@ -1,7 +1,7 @@
 import { asc, eq } from 'drizzle-orm'
 import { db } from '~~/server/db/index'
 import { pillars, buildingBlocks, constructs, subconstructs } from '~~/server/db/schema'
-import type { PillarTreeItem } from '~~/shared/types/pillar'
+import type { NodeType, PillarTreeItem } from '~~/shared/types/pillar'
 
 type TreeNode = {
   label: string
@@ -151,6 +151,60 @@ export async function updateItem(type: NodeType, symbol: string, name: string, o
     if (type === 'construct')
       return (await tx.select().from(constructs).where(eq(constructs.symbol, symbol)))[0]!
     return (await tx.select().from(subconstructs).where(eq(subconstructs.symbol, symbol)))[0]!
+  })
+}
+
+async function getSiblingsByParent(
+  tx: Tx,
+  type: NodeType,
+  parentSymbol: string
+): Promise<{ table: SiblingTable; siblings: { symbol: string }[] }> {
+  if (type === 'buildingBlock') {
+    return {
+      table: buildingBlocks,
+      siblings: await tx.select().from(buildingBlocks).where(eq(buildingBlocks.pillarSymbol, parentSymbol)).orderBy(asc(buildingBlocks.order))
+    }
+  }
+  if (type === 'construct') {
+    return {
+      table: constructs,
+      siblings: await tx.select().from(constructs).where(eq(constructs.buildingBlockSymbol, parentSymbol)).orderBy(asc(constructs.order))
+    }
+  }
+  return {
+    table: subconstructs,
+    siblings: await tx.select().from(subconstructs).where(eq(subconstructs.constructSymbol, parentSymbol)).orderBy(asc(subconstructs.order))
+  }
+}
+
+export async function createItem(
+  type: NodeType,
+  parentSymbol: string,
+  symbol: string,
+  name: string,
+  order: number
+) {
+  return db.transaction(async (tx) => {
+    const { table, siblings } = await getSiblingsByParent(tx, type, parentSymbol)
+    const ordered = reinsert([...siblings, { symbol }], symbol, order)
+    const finalOrder = ordered.findIndex((i) => i.symbol === symbol) + 1
+
+    let newRow: Record<string, unknown>
+    if (type === 'buildingBlock') {
+      newRow = (await tx.insert(buildingBlocks).values({ symbol, name, order: finalOrder, pillarSymbol: parentSymbol }).returning())[0]!
+    } else if (type === 'construct') {
+      newRow = (await tx.insert(constructs).values({ symbol, name, order: finalOrder, buildingBlockSymbol: parentSymbol }).returning())[0]!
+    } else {
+      newRow = (await tx.insert(subconstructs).values({ symbol, name, order: finalOrder, constructSymbol: parentSymbol }).returning())[0]!
+    }
+
+    for (const [i, item] of ordered.entries()) {
+      if (item.symbol !== symbol) {
+        await tx.update(table).set({ order: i + 1 }).where(eq(table.symbol, item.symbol))
+      }
+    }
+
+    return newRow
   })
 }
 

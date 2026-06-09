@@ -74,10 +74,31 @@ function extractOrders(nodes: TreeItem[]) {
 }
 const selectedItem = ref<TreeItem | undefined>()
 const isEditOpen = ref(false)
+const isAddOpen = ref(false)
 
+const childTypeMap: Record<string, string> = {
+  pillar: 'buildingBlock',
+  buildingBlock: 'construct',
+  construct: 'subconstruct'
+}
+const canAdd = computed(() => !!selectedItem.value && selectedItem.value.value.type !== 'subconstruct')
 
 const saving = ref(false)
 const toast = useToast()
+
+async function handleCreate(newItem: PillarItemCreateSchema) {
+  if (!selectedItem.value) return
+  const { symbol: parentSymbol, type: parentType } = selectedItem.value.value
+  try {
+    await $fetch('/api/pillars/item', { method: 'POST', body: { type: childTypeMap[parentType], parentSymbol, ...newItem } })
+    await refresh()
+    items.value = data.value ?? []
+    toast.add({ title: 'Created', color: 'success' })
+  } catch {
+    toast.add({ title: 'Failed to create', color: 'error' })
+    throw 'error'
+  }
+}
 
 async function handleSave(updates: PillarItemSchema) {
   if (!selectedItem.value) return
@@ -126,6 +147,15 @@ useSortable(tree, items, {
       <div class="flex items-center gap-2">
         <UBadge v-if="saving" color="neutral" variant="subtle">Saving...</UBadge>
         <UButton
+          label="Add"
+          icon="i-lucide-plus"
+          :disabled="!canAdd"
+          :color="canAdd ? 'primary' : 'neutral'"
+          variant="subtle"
+          size="sm"
+          @click="canAdd && (isAddOpen = true)"
+        />
+        <UButton
           label="Edit"
           icon="i-lucide-pencil"
           :disabled="!selectedItem"
@@ -145,6 +175,12 @@ useSortable(tree, items, {
         :items="items"
       />
     </UCard>
+    <AddTreeItemModal
+      v-if="canAdd"
+      v-model:open="isAddOpen"
+      :parent="selectedItem!.value"
+      :on-save="handleCreate"
+    />
     <EditTreeItemModal
       v-if="selectedItem"
       v-model:open="isEditOpen"
