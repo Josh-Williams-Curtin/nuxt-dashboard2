@@ -141,15 +141,17 @@ async function renumberSiblings(
   }
 }
 
-export async function updateItem(
-  type: NodeType,
-  symbol: string,
-  name: string,
-  order: number
-): Promise<void> {
-  await db.transaction(async (tx) => {
+export async function updateItem(type: NodeType, symbol: string, name: string, order: number) {
+  return db.transaction(async (tx) => {
     const { table, siblings } = await getSiblings(tx, type, symbol)
     await renumberSiblings(tx, table, siblings, symbol, name, order)
+    if (type === 'pillar')
+      return (await tx.select().from(pillars).where(eq(pillars.symbol, symbol)))[0]!
+    if (type === 'buildingBlock')
+      return (await tx.select().from(buildingBlocks).where(eq(buildingBlocks.symbol, symbol)))[0]!
+    if (type === 'construct')
+      return (await tx.select().from(constructs).where(eq(constructs.symbol, symbol)))[0]!
+    return (await tx.select().from(subconstructs).where(eq(subconstructs.symbol, symbol)))[0]!
   })
 }
 
