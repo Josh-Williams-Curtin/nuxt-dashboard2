@@ -13,7 +13,7 @@ const props = defineProps<{
 }>()
 
 const open = defineModel<boolean>('open', { default: false })
-const title = computed(() => `Add ${childLabels[props.parent.type]}`)
+const title = computed(() => `Create ${childLabels[props.parent.type]}`)
 const state = reactive<Partial<PillarItemCreateSchema>>({ symbol: '', name: '', order: 1 })
 
 watch(open, (val) => {
@@ -22,7 +22,13 @@ watch(open, (val) => {
 </script>
 
 <template>
-  <FormModal v-model:open="open" :title="title" :schema="pillarItemCreateSchema" :state="state" :on-save="onSave">
+  <FormModal
+    v-model:open="open"
+    :title="title"
+    :schema="pillarItemCreateSchema"
+    :state="state"
+    :on-save="onSave"
+  >
     <div class="grid grid-cols-2 gap-3">
       <UFormField name="symbol" label="Symbol">
         <UInput v-model="state.symbol" autofocus class="w-full" />

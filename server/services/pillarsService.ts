@@ -8,6 +8,7 @@ type TreeNode = {
   icon: string
   value: PillarTreeItem
   defaultExpanded: boolean
+  ui?: { linkLeadingIcon?: string }
   children?: TreeNode[]
 }
 
@@ -32,22 +33,22 @@ export async function getPillarsTree(): Promise<TreeNode[]> {
   return rows.map((p) => ({
     label: p.name,
     icon: 'i-lucide-layers',
-    value: { symbol: p.symbol, type: 'pillar' as const, order: p.order, name: p.name },
+    value: { symbol: p.symbol, type: 'pillar', order: p.order, name: p.name },
     defaultExpanded: true,
     children: p.buildingBlocks.map((bb) => ({
       label: bb.name,
       icon: 'i-lucide-box',
-      value: { symbol: bb.symbol, type: 'buildingBlock' as const, order: bb.order, name: bb.name },
+      value: { symbol: bb.symbol, type: 'buildingBlock', order: bb.order, name: bb.name },
       defaultExpanded: true,
       children: bb.constructs.map((c) => ({
         label: c.name,
         icon: 'i-lucide-puzzle',
-        value: { symbol: c.symbol, type: 'construct' as const, order: c.order, name: c.name },
+        value: { symbol: c.symbol, type: 'construct', order: c.order, name: c.name },
         defaultExpanded: true,
         children: c.subconstructs.map((sc) => ({
           label: sc.name,
           icon: 'i-lucide-circle-dot',
-          value: { symbol: sc.symbol, type: 'subconstruct' as const, order: sc.order, name: sc.name },
+          value: { symbol: sc.symbol, type: 'subconstruct', order: sc.order, name: sc.name },
           defaultExpanded: false
         }))
       }))
@@ -162,18 +163,30 @@ async function getSiblingsByParent(
   if (type === 'buildingBlock') {
     return {
       table: buildingBlocks,
-      siblings: await tx.select().from(buildingBlocks).where(eq(buildingBlocks.pillarSymbol, parentSymbol)).orderBy(asc(buildingBlocks.order))
+      siblings: await tx
+        .select()
+        .from(buildingBlocks)
+        .where(eq(buildingBlocks.pillarSymbol, parentSymbol))
+        .orderBy(asc(buildingBlocks.order))
     }
   }
   if (type === 'construct') {
     return {
       table: constructs,
-      siblings: await tx.select().from(constructs).where(eq(constructs.buildingBlockSymbol, parentSymbol)).orderBy(asc(constructs.order))
+      siblings: await tx
+        .select()
+        .from(constructs)
+        .where(eq(constructs.buildingBlockSymbol, parentSymbol))
+        .orderBy(asc(constructs.order))
     }
   }
   return {
     table: subconstructs,
-    siblings: await tx.select().from(subconstructs).where(eq(subconstructs.constructSymbol, parentSymbol)).orderBy(asc(subconstructs.order))
+    siblings: await tx
+      .select()
+      .from(subconstructs)
+      .where(eq(subconstructs.constructSymbol, parentSymbol))
+      .orderBy(asc(subconstructs.order))
   }
 }
 
@@ -191,16 +204,34 @@ export async function createItem(
 
     let newRow: Record<string, unknown>
     if (type === 'buildingBlock') {
-      newRow = (await tx.insert(buildingBlocks).values({ symbol, name, order: finalOrder, pillarSymbol: parentSymbol }).returning())[0]!
+      newRow = (
+        await tx
+          .insert(buildingBlocks)
+          .values({ symbol, name, order: finalOrder, pillarSymbol: parentSymbol })
+          .returning()
+      )[0]!
     } else if (type === 'construct') {
-      newRow = (await tx.insert(constructs).values({ symbol, name, order: finalOrder, buildingBlockSymbol: parentSymbol }).returning())[0]!
+      newRow = (
+        await tx
+          .insert(constructs)
+          .values({ symbol, name, order: finalOrder, buildingBlockSymbol: parentSymbol })
+          .returning()
+      )[0]!
     } else {
-      newRow = (await tx.insert(subconstructs).values({ symbol, name, order: finalOrder, constructSymbol: parentSymbol }).returning())[0]!
+      newRow = (
+        await tx
+          .insert(subconstructs)
+          .values({ symbol, name, order: finalOrder, constructSymbol: parentSymbol })
+          .returning()
+      )[0]!
     }
 
     for (const [i, item] of ordered.entries()) {
       if (item.symbol !== symbol) {
-        await tx.update(table).set({ order: i + 1 }).where(eq(table.symbol, item.symbol))
+        await tx
+          .update(table)
+          .set({ order: i + 1 })
+          .where(eq(table.symbol, item.symbol))
       }
     }
 
@@ -239,4 +270,11 @@ export async function reorderTree(data: ReorderData): Promise<void> {
         .where(eq(subconstructs.symbol, sc.symbol))
     }
   })
+}
+
+export async function deleteItem(type: NodeType, symbol: string) {
+  if (type === 'pillar') return db.delete(pillars).where(eq(pillars.symbol, symbol))
+  if (type === 'buildingBlock') return db.delete(buildingBlocks).where(eq(buildingBlocks.symbol, symbol))
+  if (type === 'construct') return db.delete(constructs).where(eq(constructs.symbol, symbol))
+  return db.delete(subconstructs).where(eq(subconstructs.symbol, symbol))
 }
