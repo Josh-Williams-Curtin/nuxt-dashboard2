@@ -5,8 +5,8 @@ export const useCustomTree = () => {
   const items = useState<TreeItem[]>('pillars-tree', () => [])
   const saving = ref(false)
 
-  const { pending, refresh } = useAsyncData('pillars-tree', () => $fetch<TreeItem[]>('/api/pillars/tree'), {
-    immediate: true,
+  const { pending, refresh } = useFetch<TreeItem[]>('/api/pillars/tree', {
+    key: 'pillars-tree',
     transform: (data) => (items.value = data)
   })
 

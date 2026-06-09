@@ -50,9 +50,9 @@ When adding nav items, edit the `items` array in `AppSidebar.vue`. Use `to` for 
 ## Composables pattern
 
 - `useState` for shared reactive state across pages
-- `useAsyncData` inside composables for list fetches — use `immediate: true` and a `transform` callback to populate the `useState` ref
-- `$fetch` for mutations (create, update, delete) inside composable functions, followed by `refresh()` from `useAsyncData`
-- Expose `pending` from `useAsyncData` so pages can show loading state without managing it themselves
+- `useFetch` inside composables for list fetches — use a `key` and a `transform` callback to populate the `useState` ref
+- `$fetch` for mutations (create, update, delete) inside composable functions, followed by `refresh()` from `useFetch`
+- Expose `pending` from `useFetch` so pages can show loading state without managing it themselves
 
 Example structure for a list composable:
 
@@ -60,8 +60,8 @@ Example structure for a list composable:
 export const useContacts = () => {
   const contacts = useState<Contact[]>('contacts', () => [])
 
-  const { pending, refresh } = useAsyncData('contacts', () => $fetch<Contact[]>('/api/contacts'), {
-    immediate: true,
+  const { pending, refresh } = useFetch<Contact[]>('/api/contacts', {
+    key: 'contacts',
     transform: (data) => (contacts.value = data)
   })
 
@@ -114,7 +114,7 @@ Zod schemas for modals live in `shared/utils/validators.ts`. Shared data types l
 
 Each entity follows this structure:
 
-- `app/composables/use{Entity}.ts` — state + `useAsyncData` list fetch + `$fetch` mutations with `refresh()`
+- `app/composables/use{Entity}.ts` — state + `useFetch` list fetch + `$fetch` mutations with `refresh()`
 - `app/components/{Entity}Form.vue` — shared form for create and edit, accepts `initialData` prop, emits `submit`
 - `app/pages/{entity}/index.vue` — list, calls composable, uses `pending` for loading state
 - `app/pages/{entity}/create.vue` — calls composable `create` method

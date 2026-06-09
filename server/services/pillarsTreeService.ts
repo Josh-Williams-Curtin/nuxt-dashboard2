@@ -181,6 +181,9 @@ async function getSiblingsByParent(
   if (type === 'pillar') {
     return { table: pillars, siblings: await tx.select().from(pillars).orderBy(asc(pillars.order)) }
   }
+  if (!parentSymbol) {
+    throw new Error('parentSymbol is required')
+  }
   if (type === 'buildingBlock') {
     return {
       table: buildingBlocks,

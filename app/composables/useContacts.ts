@@ -1,8 +1,8 @@
 export const useContacts = () => {
   const contacts = useState<Contact[]>('contacts', () => [])
 
-  const { pending, refresh } = useAsyncData('contacts', () => $fetch<Contact[]>('/api/contacts'), {
-    immediate: true,
+  const { pending, refresh } = useFetch<Contact[]>('/api/contacts', {
+    key: 'contacts',
     transform: (data) => (contacts.value = data)
   })
 
