@@ -8,6 +8,7 @@ useHead({
 useSeoMeta({ title: 'nuxt-dashboard' })
 
 const sidebarOpen = useState('sidebarOpen', () => true)
+const pageTitle = useState<string>('pageTitle', () => '')
 const { loggedIn } = useUserSession()
 </script>
 
@@ -19,7 +20,7 @@ const { loggedIn } = useUserSession()
       <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
         <div
           v-if="loggedIn"
-          class="h-(--ui-header-height) shrink-0 flex items-center px-4 border-b border-default"
+          class="h-(--ui-header-height) shrink-0 flex items-center gap-2 px-4 border-b border-default"
         >
           <UButton
             icon="i-lucide-panel-left"
@@ -28,6 +29,7 @@ const { loggedIn } = useUserSession()
             aria-label="Toggle sidebar"
             @click="sidebarOpen = !sidebarOpen"
           />
+          <span v-if="pageTitle" class="text-2xl font-bold">{{ pageTitle }}</span>
         </div>
 
         <div class="flex-1 overflow-auto">

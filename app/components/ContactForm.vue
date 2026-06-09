@@ -11,6 +11,8 @@ const toast = useToast()
 
 type Schema = ContactSchema
 
+useState('pageTitle').value = props.id ? 'Edit Contact' : 'New Contact'
+
 const existing = props.id ? await fetchContact(props.id) : null
 
 const state = reactive<Partial<Schema>>({ ...defaultContact, ...(existing ?? {}) })
@@ -46,9 +48,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
   <UContainer class="py-8 max-w-lg">
-    <div class="flex items-center gap-4 mb-6">
+    <div class="mb-6">
       <UButton to="/contacts" icon="i-lucide-arrow-left" variant="ghost" color="neutral" />
-      <h1 class="text-2xl font-bold">{{ id ? 'Edit Contact' : 'New Contact' }}</h1>
     </div>
 
     <UCard>

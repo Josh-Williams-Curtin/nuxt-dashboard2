@@ -4,6 +4,8 @@ import type { SortableEvent } from 'sortablejs'
 import { useSortable } from '@vueuse/integrations/useSortable'
 import { useDebounceFn } from '@vueuse/core'
 
+useState('pageTitle').value = 'Pillars'
+
 const { data } = await useAsyncData('pillars-tree', () => $fetch<TreeItem[]>('/api/pillars/tree'))
 const items = shallowRef<TreeItem[]>(data.value ?? [])
 
@@ -135,9 +137,8 @@ useSortable(tree, items, {
 </script>
 
 <template>
-  <UContainer class="py-8">
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Pillars</h1>
+  <UContainer class="py-8 h-full flex flex-col">
+    <div class="flex justify-end mb-6 shrink-0">
       <div class="flex items-center gap-2">
         <UBadge v-if="saving" color="neutral" variant="subtle">Saving...</UBadge>
         <UButton
@@ -151,7 +152,7 @@ useSortable(tree, items, {
         />
       </div>
     </div>
-    <UCard>
+    <UCard class="flex-1 min-h-0 overflow-auto">
       <UTree
         v-model="selectedItem"
         ref="tree"

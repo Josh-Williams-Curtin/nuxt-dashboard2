@@ -1,10 +1,5 @@
 <template>
   <div>
-    <UPageHero
-      title="Theme Preview"
-      description="A live preview of all CSS variable design tokens — colors, text, backgrounds, borders, and radius."
-    />
-
     <UContainer class="py-6 space-y-8">
       <!-- COLORS -->
       <section>
@@ -182,6 +177,8 @@
 </template>
 
 <script setup>
+useState('pageTitle').value = 'Theme Preview'
+
 const semanticColors = [
   { name: 'primary', bg: 'bg-primary' },
   { name: 'secondary', bg: 'bg-secondary' },

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+useState('pageTitle').value = 'Contacts'
+
 const { contacts, pending, deleteContact } = useContacts()
 
 const toast = useToast()
@@ -58,10 +60,6 @@ async function handleDelete() {
 
 <template>
   <UContainer class="py-8">
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Contacts</h1>
-    </div>
-
     <div class="flex justify-between mb-4">
       <UInput
         v-model="search"
