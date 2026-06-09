@@ -42,6 +42,11 @@ const items: NavigationMenuItem[] = [
     label: 'Contacts',
     icon: 'i-lucide-users',
     to: '/contacts'
+  },
+  {
+    label: 'Pillars',
+    icon: 'i-lucide-layers',
+    to: '/pillars'
   }
 ]
 

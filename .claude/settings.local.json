@@ -26,7 +26,8 @@
       "Bash(rmdir /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/.github/workflows)",
       "Bash(rmdir /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/.github)",
       "Bash(git -C /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2 status)",
-      "Bash(curl -s https://raw.githubusercontent.com/nuxt-ui-templates/dashboard/main/app/components/AppSidebar.vue)"
+      "Bash(curl -s https://raw.githubusercontent.com/nuxt-ui-templates/dashboard/main/app/components/AppSidebar.vue)",
+      "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/server/api/pillars)"
     ]
   }
 }
