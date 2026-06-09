@@ -33,7 +33,9 @@ const { loggedIn } = useUserSession()
         </div>
 
         <div class="flex-1 overflow-auto">
-          <NuxtPage />
+          <NuxtLayout>
+            <NuxtPage />
+          </NuxtLayout>
         </div>
       </div>
     </div>

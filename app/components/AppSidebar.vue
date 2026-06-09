@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
+import type { DropdownMenuItem } from '@nuxt/ui'
 
 const open = useState('sidebarOpen', () => true)
 const colorMode = useColorMode()
@@ -32,23 +32,7 @@ async function logout() {
   await navigateTo('/login')
 }
 
-const items: NavigationMenuItem[] = [
-  {
-    label: 'Home',
-    icon: 'i-lucide-house',
-    to: '/'
-  },
-  {
-    label: 'Contacts',
-    icon: 'i-lucide-users',
-    to: '/contacts'
-  },
-  {
-    label: 'Pillars Tree',
-    icon: 'i-lucide-layers',
-    to: '/pillarsTree'
-  }
-]
+const items = navItems
 
 const user = computed(() => ({
   name: sessionUser.value?.name ?? '',

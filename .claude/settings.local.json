@@ -39,7 +39,9 @@
       "Bash(grep -r 'await $fetch\\\\|\\\\.then\\\\|async function' /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app '--include=*.vue' '--include=*.ts' -n)",
       "Bash(grep -E '\\($fetch|\\\\.then\\)')",
       "Bash(grep -n '$fetch' /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/composables/useContacts.ts /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/composables/usePillarsTree.ts /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/pages/login.vue /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/components/ContactForm.vue)",
-      "Bash(grep '$fetch' /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/composables/useContacts.ts)"
+      "Bash(grep '$fetch' /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/composables/useContacts.ts)",
+      "Bash(rm /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/composables/useNavItems.ts)",
+      "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/layouts)"
     ]
   }
 }
