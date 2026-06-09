@@ -8,6 +8,13 @@ const childLabels: Record<string, string> = {
   subconstruct: 'Subconstruct'
 }
 
+const typeLabels: Record<string, string> = {
+  pillar: 'Pillar',
+  buildingBlock: 'Building Block',
+  construct: 'Construct',
+  subconstruct: 'Subconstruct'
+}
+
 const props = defineProps<{
   item?: PillarTreeItem
   id?: string
@@ -19,7 +26,7 @@ const open = defineModel<boolean>('open', { default: false })
 const isEdit = computed(() => !!props.id)
 
 const title = computed(() => {
-  if (isEdit.value) return 'Edit Tree Item'
+  if (isEdit.value) return props.item ? `Edit ${typeLabels[props.item.type]}` : 'Edit Tree Item'
   return props.item ? `Create ${childLabels[props.item.type]}` : 'Create Pillar'
 })
 
@@ -32,7 +39,7 @@ watch(open, (val) => {
   } else {
     Object.assign(state, { symbol: '', name: '', order: 1 })
   }
-})
+}, { immediate: true })
 </script>
 
 <template>
