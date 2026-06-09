@@ -5,7 +5,7 @@ useHead({
   htmlAttrs: { lang: 'en' }
 })
 
-useSeoMeta({ title: 'nuxt-dashboard' })
+useSeoMeta({ title: 'Nuxt Dashboard' })
 
 const sidebarOpen = useState('sidebarOpen', () => true)
 const pageTitle = useState<string>('pageTitle', () => '')
