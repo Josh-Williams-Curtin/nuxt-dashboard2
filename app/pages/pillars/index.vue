@@ -6,7 +6,7 @@ import { useDebounceFn } from '@vueuse/core'
 
 useState('pageTitle').value = 'Pillars'
 
-const { data } = await useAsyncData('pillars-tree', () => $fetch<TreeItem[]>('/api/pillars/tree'))
+const { data, refresh } = await useAsyncData('pillars-tree', () => $fetch<TreeItem[]>('/api/pillars/tree'))
 const items = shallowRef<TreeItem[]>(data.value ?? [])
 
 type FlatNode = { item: TreeItem; parent: TreeItem[]; indexInParent: number }
@@ -75,21 +75,6 @@ function extractOrders(nodes: TreeItem[]) {
 const selectedItem = ref<TreeItem | undefined>()
 const isEditOpen = ref(false)
 
-function updateLabelInTree(
-  nodes: TreeItem[],
-  symbol: string,
-  type: string,
-  newLabel: string
-): boolean {
-  for (const node of nodes) {
-    if (node.value.symbol === symbol && node.value.type === type) {
-      node.label = newLabel
-      return true
-    }
-    if (node.children && updateLabelInTree(node.children, symbol, type, newLabel)) return true
-  }
-  return false
-}
 
 const saving = ref(false)
 const toast = useToast()
@@ -99,9 +84,8 @@ async function handleSave(name: string, order: number) {
   const { symbol, type } = selectedItem.value.value
   try {
     await $fetch('/api/pillars/item', { method: 'PATCH', body: { type, symbol, name, order } })
-    updateLabelInTree(items.value, symbol, type, name)
-    selectedItem.value.value.order = order
-    triggerRef(items)
+    await refresh()
+    items.value = data.value ?? []
     toast.add({ title: 'Saved', color: 'success' })
   } catch {
     toast.add({ title: 'Failed to save', color: 'error' })
