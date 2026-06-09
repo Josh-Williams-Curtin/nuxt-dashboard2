@@ -31,9 +31,10 @@ function moveItem(oldIndex: number, newIndex: number) {
   const targetAfterRemoval = flatten(items.value).find(({ item }) => item === target.item)
   if (!targetAfterRemoval) return
 
-  const insertAt = oldIndex < newIndex
-    ? targetAfterRemoval.indexInParent + 1  // moving down: insert after target
-    : targetAfterRemoval.indexInParent      // moving up: insert before target
+  const insertAt =
+    oldIndex < newIndex
+      ? targetAfterRemoval.indexInParent + 1 // moving down: insert after target
+      : targetAfterRemoval.indexInParent // moving up: insert before target
   targetAfterRemoval.parent.splice(insertAt, 0, moved)
 }
 
@@ -69,9 +70,42 @@ function extractOrders(nodes: TreeItem[]) {
     subconstructs: subconstrucetsOut
   }
 }
+const selectedItem = ref<TreeItem | undefined>()
+const isEditOpen = ref(false)
+
+function updateLabelInTree(
+  nodes: TreeItem[],
+  symbol: string,
+  type: string,
+  newLabel: string
+): boolean {
+  for (const node of nodes) {
+    if (node.value.symbol === symbol && node.value.type === type) {
+      node.label = newLabel
+      return true
+    }
+    if (node.children && updateLabelInTree(node.children, symbol, type, newLabel)) return true
+  }
+  return false
+}
 
 const saving = ref(false)
 const toast = useToast()
+
+async function handleSave(name: string, order: number) {
+  if (!selectedItem.value) return
+  const { symbol, type } = selectedItem.value.value
+  try {
+    await $fetch('/api/pillars/item', { method: 'PATCH', body: { type, symbol, name, order } })
+    updateLabelInTree(items.value, symbol, type, name)
+    selectedItem.value.value.order = order
+    triggerRef(items)
+    toast.add({ title: 'Saved', color: 'success' })
+  } catch {
+    toast.add({ title: 'Failed to save', color: 'error' })
+    throw 'error'
+  }
+}
 
 async function save() {
   saving.value = true
@@ -104,10 +138,34 @@ useSortable(tree, items, {
   <UContainer class="py-8">
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold">Pillars</h1>
-      <UBadge v-if="saving" color="neutral" variant="subtle">Saving...</UBadge>
+      <div class="flex items-center gap-2">
+        <UBadge v-if="saving" color="neutral" variant="subtle">Saving...</UBadge>
+        <UButton
+          label="Edit"
+          icon="i-lucide-pencil"
+          :disabled="!selectedItem"
+          :color="selectedItem ? 'primary' : 'neutral'"
+          variant="subtle"
+          size="sm"
+          @click="selectedItem && (isEditOpen = true)"
+        />
+      </div>
     </div>
     <UCard>
-      <UTree ref="tree" :nested="false" :unmount-on-hide="false" :items="items" />
+      <UTree
+        v-model="selectedItem"
+        ref="tree"
+        :nested="false"
+        :unmount-on-hide="false"
+        :items="items"
+      />
     </UCard>
+    <EditItemModal
+      v-model:open="isEditOpen"
+      :symbol="selectedItem?.value.symbol ?? ''"
+      :initial-name="selectedItem?.label ?? ''"
+      :initial-order="selectedItem?.value.order ?? 0"
+      :on-save="handleSave"
+    />
   </UContainer>
 </template>

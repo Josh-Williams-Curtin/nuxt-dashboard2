@@ -2,10 +2,12 @@ import { asc, eq } from 'drizzle-orm'
 import { db } from '~~/server/db/index'
 import { pillars, buildingBlocks, constructs, subconstructs } from '~~/server/db/schema'
 
+type NodeType = 'pillar' | 'buildingBlock' | 'construct' | 'subconstruct'
+
 type TreeNode = {
   label: string
   icon: string
-  value: { symbol: string }
+  value: { symbol: string; type: NodeType; order: number }
   defaultExpanded: boolean
   children?: TreeNode[]
 }
@@ -31,27 +33,32 @@ export async function getPillarsTree(): Promise<TreeNode[]> {
   return rows.map((p) => ({
     label: p.name,
     icon: 'i-lucide-layers',
-    value: { symbol: p.symbol },
+    value: { symbol: p.symbol, type: 'pillar' as const, order: p.order },
     defaultExpanded: true,
     children: p.buildingBlocks.map((bb) => ({
       label: bb.name,
       icon: 'i-lucide-box',
-      value: { symbol: bb.symbol },
+      value: { symbol: bb.symbol, type: 'buildingBlock' as const, order: bb.order },
       defaultExpanded: true,
       children: bb.constructs.map((c) => ({
         label: c.name,
         icon: 'i-lucide-puzzle',
-        value: { symbol: c.symbol },
+        value: { symbol: c.symbol, type: 'construct' as const, order: c.order },
         defaultExpanded: true,
         children: c.subconstructs.map((sc) => ({
           label: sc.name,
           icon: 'i-lucide-circle-dot',
-          value: { symbol: sc.symbol },
+          value: { symbol: sc.symbol, type: 'subconstruct' as const, order: sc.order },
           defaultExpanded: false
         }))
       }))
     }))
   }))
+}
+
+export async function updateItem(type: NodeType, symbol: string, name: string, order: number): Promise<void> {
+  const table = { pillar: pillars, buildingBlock: buildingBlocks, construct: constructs, subconstruct: subconstructs }[type]
+  await db.update(table).set({ name, order }).where(eq(table.symbol, symbol))
 }
 
 export type ReorderData = {
