@@ -141,7 +141,7 @@ const userItems = computed<DropdownMenuItem[][]>(() => [
   <USidebar v-model:open="open" collapsible="icon" :ui="{ container: 'h-full' }">
     <template #header>
       <UIcon name="i-simple-icons-nuxtdotjs" class="size-8 shrink-0 text-primary" />
-      <span class="font-semibold truncate">Nuxt</span>
+      <span class="font-semibold truncate">Nuxt <span class="text-primary">UI</span></span>
     </template>
 
     <UNavigationMenu

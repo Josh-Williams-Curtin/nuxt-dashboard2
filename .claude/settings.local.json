@@ -41,7 +41,24 @@
       "Bash(grep -n '$fetch' /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/composables/useContacts.ts /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/composables/usePillarsTree.ts /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/pages/login.vue /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/components/ContactForm.vue)",
       "Bash(grep '$fetch' /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/composables/useContacts.ts)",
       "Bash(rm /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/composables/useNavItems.ts)",
-      "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/layouts)"
+      "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/app/layouts)",
+      "Bash(curl --version)",
+      "Bash(mkdir -p /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/test/api)",
+      "Bash(claude mcp *)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('mcpServers', d.get\\('mcp', 'not found'\\)\\), indent=2\\)\\)\")",
+      "Bash(cat /mnt/c/Users/298235A/AppData/Roaming/Claude/claude_desktop_config.json 2>/dev/null || echo \"not found\")",
+      "Bash(find /mnt/c/Users/298235A/AppData/Roaming -name \"*.json\" 2>/dev/null | grep -i claude | head -20)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in d.items\\(\\) if 'mcp' in k.lower\\(\\) or 'server' in k.lower\\(\\)}, indent=2\\)\\)\")",
+      "Bash(find /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2 -name \".mcp.json\" 2>/dev/null; find /mnt/c/Users/298235A -maxdepth 3 -name \".mcp.json\" 2>/dev/null; find /home/josh -name \".mcp.json\" 2>/dev/null)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('exports',{}\\), indent=2\\)\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('peerDependencies',{}\\), indent=2\\)\\)\")",
+      "Bash(rm -rf /mnt/c/Users/298235A/Documents/Vue/nuxt-dashboard2/.nuxt)",
+      "Bash(bun remove *)",
+      "Bash(xargs cat)",
+      "Bash(node -e \"const ms = require\\('./node_modules/magic-string/dist/magic-string.cjs.js'\\); console.log\\(typeof ms, typeof ms.default\\)\")",
+      "Bash(bun pm *)",
+      "Bash(bun x *)"
     ]
   }
 }
